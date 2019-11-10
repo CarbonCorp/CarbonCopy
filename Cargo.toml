@@ -1,0 +1,10 @@
+[package]
+name = "carboncopy"
+version = "0.1.0"
+authors = ["Anh <hi@imanhle.com>"]
+
+[dependencies]
+yaml-rust = "0.4"
+shiplift = "0.5.0"
+tokio = "0.1.22"
+serde_json = "1.0"
