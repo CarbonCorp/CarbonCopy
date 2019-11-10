@@ -10,5 +10,5 @@ fn main() {
     let config = config::get_config();
     let docker = shiplift::Docker::new();
 
-    container::start_docker(&config, &docker);
+    container::start_container(&config, &docker);
 }

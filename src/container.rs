@@ -1,7 +1,7 @@
 use std::env;
 use tokio::prelude::{Future, Stream};
 
-pub fn start_docker(config: &yaml_rust::Yaml, docker: &shiplift::Docker) {
+pub fn start_container(config: &yaml_rust::Yaml, docker: &shiplift::Docker) {
     // pull the image
     let image_name = config["environment"]["image"].as_str().unwrap();
 
