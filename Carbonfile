@@ -1,0 +1,14 @@
+environment:
+    image: alpine:latest
+    variables:
+        - DATABASE_HOST: cc://database
+        - DATABASE_PORT: 3432
+
+addons:
+    - name: database
+      tag: postgres:latest
+
+# cc connect
+# cc start
+# cc list
+# carboncopy connect
