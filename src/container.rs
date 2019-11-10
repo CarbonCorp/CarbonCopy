@@ -2,31 +2,13 @@ use std::env;
 use tokio::prelude::{Future, Stream};
 
 pub fn start_container(config: &yaml_rust::Yaml, docker: &shiplift::Docker) {
-    // pull the image
+    // vars
     let image_name = config["environment"]["image"].as_str().unwrap();
-
     let container_name = get_image_name();
-    let img = shiplift::PullOptions::builder().image(image_name).build();
-    let fut = docker
-        .images()
-        .pull(&img)
-        .for_each(|output| {
-            if output["id"] != serde_json::Value::Null {
-                print!("{}", output["id"].as_str().unwrap());
-            }
-            if output["status"] != serde_json::Value::Null {
-                print!(" {}", output["status"].as_str().unwrap());
-            }
-            if output["progress"] != serde_json::Value::Null {
-                print!(" {}", output["progress"].as_str().unwrap());
-            }
-            println!("");
-            Ok(())
-        })
-        .map_err(|e| eprintln!("Error: {}", e));
-    tokio::run(fut);
+    // pull the image
+    pull_image(image_name, &docker);
 
-    // check if container already exist, else create
+    // check if container already exist and delete it
     let container = docker.containers().get(&container_name);
     let del_fut = container.delete().map_err(|e| eprintln!("Error: {}", e));
     tokio::run(del_fut);
@@ -63,4 +45,27 @@ fn get_image_name() -> String {
     let mut container_name = String::from("carboncopy_");
     container_name.push_str(&dir);
     container_name
+}
+
+fn pull_image(name: &str, docker: &shiplift::Docker) {
+    // given an image name with tag, pull it
+    let img = shiplift::PullOptions::builder().image(name).build();
+    let fut = docker
+        .images()
+        .pull(&img)
+        .for_each(|output| {
+            if output["id"] != serde_json::Value::Null {
+                print!("{}", output["id"].as_str().unwrap());
+            }
+            if output["status"] != serde_json::Value::Null {
+                print!(" {}", output["status"].as_str().unwrap());
+            }
+            if output["progress"] != serde_json::Value::Null {
+                print!(" {}", output["progress"].as_str().unwrap());
+            }
+            println!("");
+            Ok(())
+        })
+        .map_err(|e| eprintln!("Error: {}", e));
+    tokio::run(fut);
 }
